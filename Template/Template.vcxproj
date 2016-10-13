@@ -141,8 +141,12 @@
     <ClInclude Include="Windmill.h" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="res\cloud.png" />
     <Image Include="res\towertexture.png" />
     <Image Include="res\vanetexture.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="res\chickadee.ogg" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
