@@ -1,4 +1,5 @@
 #include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
 #include "TransformNode.h"
 #include "Windmill.h"
 
@@ -14,11 +15,22 @@ sf::RectangleShape copyRect(const sf::RectangleShape* shapeToCopy) {
 int main(int argc, char *argv)
 {
 
+	sf::Texture cloudTexture;
+	cloudTexture.loadFromFile("res/cloud.png");
+	cloudTexture.setRepeated(true);
+	sf::Sprite tilingBgSprite;
+	tilingBgSprite.setTexture(cloudTexture);
+
+
 	sf::Texture towerTexture;
 	towerTexture.loadFromFile("res/towertexture.png");
 
 	sf::Texture vaneTexture;
 	vaneTexture.loadFromFile("res/vanetexture.png");
+
+	sf::SoundBuffer buffer;
+	buffer.loadFromFile("res/chickadee.ogg");
+	sf::Sound sound(buffer);
 
 	sf::RectangleShape towerShape(sf::Vector2<float>(towerTexture.getSize()));
 	towerShape.setTexture(&towerTexture);
@@ -36,12 +48,28 @@ int main(int argc, char *argv)
 	vaneShape.setScale(0.5f, 0.5f);
 
 	sf::RenderWindow window(sf::VideoMode(800, 800), "Template", sf::Style::Titlebar | sf::Style::Close);
+
+	tilingBgSprite.setTextureRect(sf::IntRect(0, 0, window.getSize().x, window.getSize().y));
+	sf::IntRect bgRect = tilingBgSprite.getTextureRect();
+	float secondsTimer = 0.0f;
+	float bgSpeed = 150.0f;
+
 	Windmill* windmills[3];
 
 	for (int i = 0; i < 3; i++) {
 		windmills[i] = new Windmill(&towerShape, &vaneShape);
-		windmills[i]->SetPosition(window.getSize().x*0.25f*(i + 1), window.getSize().y*0.5f);
+		windmills[i]->SetPosition(window.getSize().x*0.25f + window.getSize().x*0.2f*(i + 1), window.getSize().y*0.5f);
 	}
+
+	sf::Vector2f *rotatePoints[3];
+	rotatePoints[0] = new sf::Vector2f(windmills[2]->getPosition());
+	rotatePoints[1] = new sf::Vector2f(windmills[0]->getPosition());
+	rotatePoints[2] = new sf::Vector2f(windmills[1]->getPosition());
+
+	for (int i = 0; i < 3; i++) {
+		windmills[i]->SetRotatePoint(*rotatePoints[i]);
+	}
+
 
 	sf::Event evt;
 	sf::Clock appTimer;
@@ -51,10 +79,10 @@ int main(int argc, char *argv)
 	sf::Vector2<int>prevMove(0, 0);
 	int keySelection = 1;
 
-	sf::Vector2f rotationOrigins[3];
-	rotationOrigins[0] = sf::Vector2f(window.getSize().x / 2.0f, window.getSize().y / 2.0f);
-	rotationOrigins[1] = windmills[0]->getPosition();
-	rotationOrigins[2] = windmills[1]->getPosition();
+
+	sf::Vector2f rotateorigin = sf::Vector2f(window.getSize().x / 2.0f, window.getSize().y / 2.0f);
+
+	bool soundPlaying = false;
 
 	while (window.isOpen()) {
 		float deltaTime = appTimer.restart().asSeconds();
@@ -64,24 +92,34 @@ int main(int argc, char *argv)
 				window.close();
 			}
 			if (evt.type == sf::Event::KeyPressed) {
-				if (evt.key.code == sf::Keyboard::Num1) {
-					keySelection = 0;
-				}
-				else if (evt.key.code == sf::Keyboard::Num2) {
-					keySelection = 1;
-				}
-				else if (evt.key.code == sf::Keyboard::Num3) {
-					keySelection = 2;
-				}
-				else if (evt.key.code == sf::Keyboard::Num4 || evt.key.code == sf::Keyboard::A) {
+				if (evt.key.code == sf::Keyboard::Num4 || evt.key.code == sf::Keyboard::A) {
 					keySelection = 3;
 					//reset positions
 					for (int i = 0; i < 3; i++) {
-						windmills[i]->SetPosition(window.getSize().x*0.25f*(i + 1), window.getSize().y*0.5f);
+						windmills[i]->SetPosition(window.getSize().x*0.25f + window.getSize().x*0.2f*(i + 1), window.getSize().y*0.5f);
 					}
+					/*windmills[0]->SetRotatePoint(rotateorigin);
+					windmills[1]->SetRotatePoint(windmills[0]->getPosition());
+					windmills[2]->SetRotatePoint(windmills[1]->getPosition());*/
 				}
+				else {
+					if (evt.key.code == sf::Keyboard::Num1) {
+						keySelection = 0;
+					}
+					else if (evt.key.code == sf::Keyboard::Num2) {
+						keySelection = 1;
+					}
+					else if (evt.key.code == sf::Keyboard::Num3) {
+						keySelection = 2;
+					}
+					windmills[keySelection]->SetRotatePoint(*rotatePoints[keySelection]);
+				}
+
+
+
 			}
 
+			//windmill rotations
 			if (evt.type == sf::Event::MouseMoved) {
 				if (evt.mouseMove.x != prevMove.x) {
 					float deltaX = (float)evt.mouseMove.x - prevMove.x;
@@ -96,25 +134,22 @@ int main(int argc, char *argv)
 				}
 
 				if (evt.mouseMove.y != prevMove.y) {
+					sf::Vector2f origin;
 					float deltaY = (float)evt.mouseMove.y - prevMove.y;
 					if (keySelection != 3) {
-						if (keySelection == 1)
-							rotationOrigins[1] = windmills[0]->getPosition();
-						else if (keySelection == 1)
-							rotationOrigins[2] = windmills[1]->getPosition();
-						windmills[keySelection]->RotateAround(deltaY, window.getSize().y, rotationOrigins[keySelection]);
+						windmills[keySelection]->RotateAround(deltaY, window.getSize().y, *rotatePoints[keySelection]);
 					}
 					else {
 						for (int i = 0; i < 3; i++) {
-							if (i == 1){
-								rotationOrigins[1] = windmills[0]->getPosition();
-								printf("windmill2 rotates around %f,%f\n", windmills[0]->getPosition().x, windmills[0]->getPosition().y);
+							if (i == 1) {
+								origin = windmills[0]->getPosition();
 							}
-							else if (i == 2){
-								rotationOrigins[2] = windmills[1]->getPosition();
-								printf("windmill3 rotates around %f,%f\n", windmills[1]->getPosition().x, windmills[0]->getPosition().y);
+							else if (i == 2) {
+								origin = windmills[1]->getPosition();
 							}
-							windmills[i]->RotateAround(deltaY, window.getSize().y, rotationOrigins[i]);
+							else
+								origin = rotateorigin;
+							windmills[i]->RotateAround(deltaY, window.getSize().y, origin);
 						}
 					}
 					prevMove.y = evt.mouseMove.y;
@@ -125,10 +160,32 @@ int main(int argc, char *argv)
 		for (int i = 0; i < 3; i++) {
 			windmills[i]->RotateVanes(deltaTime*angleAmount);
 		}
-		// do stuff.
+
+		if (!soundPlaying) {
+			sound.play();
+			soundPlaying = true;
+		}
+
+		secondsTimer += deltaTime;
+
+		sf::IntRect deltaRect = bgRect;
+		deltaRect.left = bgRect.left + (int)(bgSpeed * secondsTimer);
+		tilingBgSprite.setTextureRect(deltaRect);
+
+		if (secondsTimer > 1.0f)
+		{
+			secondsTimer -= 1.0f;
+			bgRect.left += (int)bgSpeed;
+
+			if (bgRect.left >= (float)cloudTexture.getSize().x) {
+				bgRect.left -= cloudTexture.getSize().x;
+			}
+		}
+
 		window.clear();
 
 		//draw 
+		window.draw(tilingBgSprite);
 		for (int i = 0; i < 3; i++) {
 			windmills[i]->Draw(&window);
 		}

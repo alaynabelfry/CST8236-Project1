@@ -2,7 +2,7 @@
 
 
 
-Windmill::Windmill(const sf::RectangleShape* towerToCopy, const const sf::RectangleShape* vaneToCopy) {
+Windmill::Windmill(const sf::RectangleShape* towerToCopy, const sf::RectangleShape* vaneToCopy) {
 	towerShape = copy(towerToCopy);
 	tower.m_CurrentShape = &towerShape;
 	vaneShapes[0] = copy(vaneToCopy);
@@ -20,6 +20,15 @@ Windmill::Windmill(const sf::RectangleShape* towerToCopy, const const sf::Rectan
 void Windmill::Draw(sf::RenderTarget * target)
 {
 	tower.Draw(target);
+}
+
+void Windmill::SetRotatePoint(sf::Vector2f origin)
+{
+	float toRotate = (origin.x / origin.y) * 2 * PI;
+	float a = towerShape.getPosition().x - origin.x;
+	float b = towerShape.getPosition().y - origin.y;
+	distance = sqrtf(a*a + b*b);
+	lastangle = toRotate;
 }
 
 sf::RectangleShape Windmill::copy(const sf::RectangleShape * shapeToCopy)
@@ -48,6 +57,7 @@ void Windmill::RotateSelf(float deltaX, float screenX)
 	towerShape.rotate(360.0f*(deltaX / screenX));
 }
 
+/*
 void Windmill::RotateAround(float deltaY, float screenY, sf::Vector2f origin)
 {
 float toRotate = (deltaY / screenY) * 2 * PI;
@@ -55,26 +65,28 @@ float newX = cosf(toRotate) * (towerShape.getPosition().x - origin.x) - sinf(toR
 float newY = sinf(toRotate) * (towerShape.getPosition().x - origin.x) + cosf(toRotate) * (towerShape.getPosition().y - origin.y) + origin.y;
 towerShape.setPosition(newX, newY);
 }
+*/
 
-/*
+
+
 void Windmill::RotateAround(float deltaY, float screenY, sf::Vector2f origin)
 {
+	//convert to radians for trig
 	float toRotate = (deltaY / screenY) * 2 * PI;
-	if (hasDistance == false) {
-		float a = towerShape.getPosition().x - origin.x;
-		float b = towerShape.getPosition().y - origin.y;
-		distance = sqrtf(a*a + b*b);
-		hasDistance = true;
-	}
+
 	lastangle += toRotate;
-	if(lastangle>=360.0f){
-		lastangle -= 360.0f;
+	
+	if(lastangle>=2*PI){
+		lastangle -= 2*PI;
+	}
+	else if (lastangle <= -2 * PI) {
+		lastangle += 2 * PI;
 	}
 	float newX = cosf(lastangle) * (distance) + origin.x;
 	float newY = sinf(lastangle) * (distance) + origin.y;
 	towerShape.setPosition(newX, newY);
 }
-*/
+
 void Windmill::RotateVanes(float angle)
 {
 	for (int i = 0; i < 4; i++) {

@@ -5,7 +5,7 @@
 class Windmill {
 public:
 
-	Windmill(const sf::RectangleShape* towerToCopy, const const sf::RectangleShape* vaneToCopy);
+	Windmill(const sf::RectangleShape* towerToCopy, const sf::RectangleShape* vaneToCopy);
 	
 	void SetPosition(float x, float y);
 	sf::Vector2f getPosition();
@@ -13,18 +13,18 @@ public:
 	void RotateAround(float deltaY, float screenY, sf::Vector2f origin);
 	void RotateVanes(float angle);
 	void Draw(sf::RenderTarget *target);
+	void SetRotatePoint(sf::Vector2f origin);
 
 protected:
 	sf::RectangleShape copy(const sf::RectangleShape* shapeToCopy);
 
-	const float PI = 3.1415927;
+	const float PI = 3.1415927f;
 	sf::RectangleShape towerShape;
 	sf::RectangleShape vaneShapes[4];
 	TransformNode tower;
 	TransformNode* vanes[4];
 	float lastangle = 0;
-	bool hasDistance = false;
-	float distance;
+	float distance=-1;
 
 };
 

@@ -1,6 +1,7 @@
-﻿  Windmill.cpp
-c:\users\alayn\documents\github\cst8236-project1\template\windmill.h(8): warning C4114: same type qualifier used more than once
-c:\users\alayn\documents\github\cst8236-project1\template\windmill.h(20): warning C4305: 'initializing': truncation from 'double' to 'const float'
-c:\users\alayn\documents\github\cst8236-project1\template\windmill.cpp(5): warning C4114: same type qualifier used more than once
+﻿  main.cpp
+c:\users\alayn\documents\github\cst8236-project1\template\main.cpp(127): warning C4244: 'argument': conversion from 'unsigned int' to 'float', possible loss of data
+c:\users\alayn\documents\github\cst8236-project1\template\main.cpp(131): warning C4244: 'argument': conversion from 'unsigned int' to 'float', possible loss of data
+c:\users\alayn\documents\github\cst8236-project1\template\main.cpp(140): warning C4244: 'argument': conversion from 'unsigned int' to 'float', possible loss of data
+c:\users\alayn\documents\github\cst8236-project1\template\main.cpp(152): warning C4244: 'argument': conversion from 'unsigned int' to 'float', possible loss of data
   Template.vcxproj -> C:\Users\alayn\Documents\GitHub\CST8236-Project1\Debug\CST8236-Project1.exe
   Template.vcxproj -> C:\Users\alayn\Documents\GitHub\CST8236-Project1\Debug\CST8236-Project1.pdb (Full PDB)
