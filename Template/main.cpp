@@ -98,9 +98,6 @@ int main(int argc, char *argv)
 					for (int i = 0; i < 3; i++) {
 						windmills[i]->SetPosition(window.getSize().x*0.25f + window.getSize().x*0.2f*(i + 1), window.getSize().y*0.5f);
 					}
-					/*windmills[0]->SetRotatePoint(rotateorigin);
-					windmills[1]->SetRotatePoint(windmills[0]->getPosition());
-					windmills[2]->SetRotatePoint(windmills[1]->getPosition());*/
 				}
 				else {
 					if (evt.key.code == sf::Keyboard::Num1) {
@@ -193,7 +190,11 @@ int main(int argc, char *argv)
 		window.display();
 	}
 
-
+	for (int i = 0; i < 3; i++) {
+		delete windmills[i];
+		delete rotatePoints[i];
+	}
+	
 
 	return 0;
 

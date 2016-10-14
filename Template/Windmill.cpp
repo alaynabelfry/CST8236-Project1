@@ -31,6 +31,13 @@ void Windmill::SetRotatePoint(sf::Vector2f origin)
 	lastangle = toRotate;
 }
 
+Windmill::~Windmill()
+{
+	for (int i = 0; i < 4; i++) {
+		delete vanes[i];
+	}
+}
+
 sf::RectangleShape Windmill::copy(const sf::RectangleShape * shapeToCopy)
 {
 	sf::RectangleShape newShape(shapeToCopy->getSize());
@@ -56,17 +63,6 @@ void Windmill::RotateSelf(float deltaX, float screenX)
 
 	towerShape.rotate(360.0f*(deltaX / screenX));
 }
-
-/*
-void Windmill::RotateAround(float deltaY, float screenY, sf::Vector2f origin)
-{
-float toRotate = (deltaY / screenY) * 2 * PI;
-float newX = cosf(toRotate) * (towerShape.getPosition().x - origin.x) - sinf(toRotate) * (towerShape.getPosition().y - origin.y) + origin.x;
-float newY = sinf(toRotate) * (towerShape.getPosition().x - origin.x) + cosf(toRotate) * (towerShape.getPosition().y - origin.y) + origin.y;
-towerShape.setPosition(newX, newY);
-}
-*/
-
 
 
 void Windmill::RotateAround(float deltaY, float screenY, sf::Vector2f origin)

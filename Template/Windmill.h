@@ -14,6 +14,7 @@ public:
 	void RotateVanes(float angle);
 	void Draw(sf::RenderTarget *target);
 	void SetRotatePoint(sf::Vector2f origin);
+	~Windmill();
 
 protected:
 	sf::RectangleShape copy(const sf::RectangleShape* shapeToCopy);
